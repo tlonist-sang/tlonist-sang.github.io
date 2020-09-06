@@ -3,6 +3,7 @@ layout: post
 title:  "ReScript의 JS interop"
 date:   2020-08-31 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 오늘은 ReScript에서의 JavaScript interop에 대해서 알아보겠습니다. 대부분의 내용은 [공식 문서](https://rescript-lang.org/docs/manual/latest/bind-to-js-function)를 번역한 것입니다. 들어가기에 앞서, interop은 interoperation의 줄임말로, JavaScript interop 은 ReScript에서 **JavaScript를 사용할 수 있게** 해줍니다.

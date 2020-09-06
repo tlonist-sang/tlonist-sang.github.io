@@ -3,6 +3,7 @@ layout: post
 title:  "ReScript의 파워풀한 패턴 매칭(Pattern-Matching)"
 date:   2020-09-04 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 이번 시간에는 ReScript의

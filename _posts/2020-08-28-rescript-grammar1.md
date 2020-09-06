@@ -3,6 +3,7 @@ layout: post
 title:  "ReScript의 여러 문법 알아보기 - 1"
 date:   2020-08-28 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 킹 갓 디바인 셀레스쳘 언어, ReScript의 여러 문법을 알아보는 시간을 갖겠습니다. 대부분의 내용은 [공식문서](https://rescript-lang.org/docs/manual/latest/primitive-types)를 그대로 번역했습니다. 

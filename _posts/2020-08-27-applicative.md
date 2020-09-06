@@ -3,6 +3,7 @@ layout: post
 title:  "Applicative"
 date:   2020-08-27 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 ### Applicative 란 무엇일까

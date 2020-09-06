@@ -3,6 +3,7 @@ layout: post
 title:  "ReScript의 여러 문법 알아보기 - 2, type"
 date:   2020-09-02 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 킹 갓 디바인 셀레스쳘 언어 ReScript의 문법을 알아보는 두번째 시간입니다. 

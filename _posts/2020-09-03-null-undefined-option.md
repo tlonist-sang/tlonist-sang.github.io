@@ -3,6 +3,7 @@ layout: post
 title:  "Null, Undefined and Option"
 date:   2020-09-03 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 오늘은 ReScript에서 Null, Undefined를 다루는 방법과 option syntax에 대해서 알아보겠습니다.

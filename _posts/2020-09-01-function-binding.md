@@ -3,6 +3,7 @@ layout: post
 title:  "JS interop - 함수 바인딩"
 date:   2020-09-01 17:53:57 +0900
 categories: jekyll update
+comments: true
 ---
 
 어제에 이어서 함수 바인딩에 대해서 끝까지 알아보겠습니다.

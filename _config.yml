@@ -22,9 +22,9 @@ title: 틀뢴의 개발 블로그
 email: tlonist.sang@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   팡쇼날(functional) 프로그래밍, ReScript, 그 외 잡다한 것들!
-baseurl: "/blog" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://tlonist-sang.github.io/fp-TIL/" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: 
+twitter_username: I don't do twitter
 github_username:  tlonist.sang
 
 # Build settings
