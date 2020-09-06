@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>ReScript의 파워풀한 패턴 매칭(Pattern-Matching) | 틀뢴의 개발 블로그</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="ReScript의 파워풀한 패턴 매칭(Pattern-Matching)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="이번 시간에는 ReScript의 Destructuring 데이터 모형에 기반한 switch문 Exhaustive check 에 대해서 다뤄보겠습니다. 매우매우 중요한 부분입니다!!" />
+<meta property="og:description" content="이번 시간에는 ReScript의 Destructuring 데이터 모형에 기반한 switch문 Exhaustive check 에 대해서 다뤄보겠습니다. 매우매우 중요한 부분입니다!!" />
+<link rel="canonical" href="http://localhost:4000/jekyll/update/2020/09/04/pattern-matching.html" />
+<meta property="og:url" content="http://localhost:4000/jekyll/update/2020/09/04/pattern-matching.html" />
+<meta property="og:site_name" content="틀뢴의 개발 블로그" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-04T17:53:57+09:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/jekyll/update/2020/09/04/pattern-matching.html","headline":"ReScript의 파워풀한 패턴 매칭(Pattern-Matching)","dateModified":"2020-09-04T17:53:57+09:00","datePublished":"2020-09-04T17:53:57+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/jekyll/update/2020/09/04/pattern-matching.html"},"description":"이번 시간에는 ReScript의 Destructuring 데이터 모형에 기반한 switch문 Exhaustive check 에 대해서 다뤄보겠습니다. 매우매우 중요한 부분입니다!!","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="틀뢴의 개발 블로그" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">틀뢴의 개발 블로그</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">ReScript의 파워풀한 패턴 매칭(Pattern-Matching)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-09-04T17:53:57+09:00" itemprop="datePublished">Sep 4, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>이번 시간에는 ReScript의</p>
+<ul>
+  <li>Destructuring</li>
+  <li>데이터 모형에 기반한 switch문</li>
+  <li>Exhaustive check 
+에 대해서 다뤄보겠습니다. <strong>매우매우 중요한 부분입니다!!</strong></li>
+</ul>
+
+<h2 id="destructuring">Destructuring</h2>
+<ul>
+  <li>JavaScript에서도 많이 사용하는 기능인 destructuring은, 객체 안의 데이터를 객체를 통한 접근이 아닌 직접 접근할 수 있도록 해줍니다. Flattening(평면화)라고도 하는데요, ReScript에서도 그 기능을 매우 잘 지원하고 있습니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">coordinates</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">23</span><span class="p">);</span>
+<span class="kd">let</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">)</span> <span class="o">=</span> <span class="nx">coordinates</span><span class="p">;</span>
+<span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="c1">// 10</span>
+</code></pre></div></div>
+<ul>
+  <li>이런 단순한 데이터뿐만 아니라 대부분의 데이터 타입에서 destructuring 기능이 제공되는데요, 아래는 그 예시입니다.
+```javascript
+type student = {name: string, age: int}
+let student1 = {name: “Harry”, age: 14}
+let {name} = student1 // (1)</li>
+</ul>
+
+<p>// Variant
+type result =
+  | Success(string)
+let myResult = Success(“You did it!”)
+let Success(message) = myResult // (2)”You did it!” assigned to <code class="language-plaintext highlighter-rouge">message</code></p>
+
+<p>// Array
+let myArray = [1, 2, 3]
+let [item1, item2] = myArray // (3) 1 assigned to <code class="language-plaintext highlighter-rouge">item1</code>, 2 assigned to <code class="language-plaintext highlighter-rouge">item2</code></p>
+
+<p>// List
+let myList = list{1, 2, 3}
+let list{head, …tail} = myList // (4) 1 assigned to <code class="language-plaintext highlighter-rouge">head</code>, <code class="language-plaintext highlighter-rouge">list{2, 3}</code> assigned to tail</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(1) "Harry" 가 `name` 에 할당되었습니다.
+(2) Variant 타입인 Success 안의 "You did it"이 message에 매칭되었습니다.
+(3) myArray 배열이 앞부터 차례로 1, 2에 매칭되었습니다. 
+(4) list의 처음은 1에, 나머지 {2,3}은 tail에 매칭되었습니다.
+
+- 레코드를 쓸 때는, destructure 된 값에 다른 필드를 매핑할 수도 있습니다.
+```javascript
+type student = {name: string, age: int}
+let student1 = {name: "Harry", age: 14}
+let {name: n} = student1 // Harry는 'n 이라는 타입에 매핑되었습니다.
+</code></pre></div></div>
+
+<h2 id="switch-기반의-패턴-매칭">Switch 기반의 패턴 매칭</h2>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">payload</span> <span class="o">=</span>
+  <span class="o">|</span> <span class="nx">BadResult</span><span class="p">(</span><span class="nx">int</span><span class="p">)</span>
+  <span class="o">|</span> <span class="nx">GoodResult</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span>
+  <span class="o">|</span> <span class="nx">NoResult</span>
+</code></pre></div></div>
+<ul>
+  <li>위와 같이 Variant가 정의되어 있고, 각각의 경우마다 다른 호출 결과를 보이고 싶다고 합시다. 잠깐 Variant에 대해서 설명을 하자면, payload는 BadResult, GoodResult, NoResult 세 개중 하나의 타입을 가질 수 있으며, 각각의 타입은 괄호 안의 값을 가질 수 있습니다. GoodResult 일 때는 축하메시지를, BadResult일때는 에러 코드를 알려주고 아무 결과가 없을때는 아무말이나 출력해봅시다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">input</span> <span class="o">=</span> <span class="nx">GoodResult</span><span class="p">(</span><span class="dl">"</span><span class="s2">Harry</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">switch</span><span class="p">(</span><span class="nx">input</span><span class="p">){</span>
+    <span class="o">|</span> <span class="nx">GoodResult</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Congratulations!</span><span class="dl">"</span> <span class="o">++</span> <span class="nx">name</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="o">|</span> <span class="nx">BadResult</span><span class="p">(</span><span class="nx">errorCode</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Error occured with code: </span><span class="dl">"</span> <span class="o">++</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Int</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="nx">errorCode</span><span class="p">))</span>
+    <span class="p">}</span>
+    <span class="o">|</span> <span class="nx">NoResult</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">bibi~</span><span class="dl">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>위의 코드는 <strong>Congratulations!Harry</strong> 를 출력합니다. 다음은 좀 더 어려운 예제를 보겠습니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">status</span> <span class="o">=</span> <span class="nx">Delivered</span> <span class="o">|</span> <span class="nx">OnTheWay</span><span class="p">(</span><span class="nx">int</span><span class="p">)</span> <span class="o">|</span> <span class="nx">Cancelled</span>
+<span class="nx">type</span> <span class="nx">crop</span> <span class="o">=</span> <span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="na">quantity</span><span class="p">:</span> <span class="nx">int</span><span class="p">}</span>
+<span class="nx">type</span> <span class="nx">person</span> <span class="o">=</span> 
+    <span class="o">|</span> <span class="nx">Farmer</span><span class="p">({</span>
+        <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+        <span class="na">age</span><span class="p">:</span> <span class="nx">int</span><span class="p">,</span>
+        <span class="na">crop</span><span class="p">:</span> <span class="nx">crop</span>
+    <span class="p">})</span>
+    <span class="o">|</span> <span class="nx">Purchaser</span><span class="p">({</span>
+        <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+        <span class="na">status</span><span class="p">:</span> <span class="nx">status</span>
+    <span class="p">})</span>
+</code></pre></div></div>
+<ul>
+  <li>다음의 요구사항을 구현해봅시다.
+    <ol>
+      <li>farmer의 이름이 John이거나 Matt 이면 나이를 물어봅니다.</li>
+      <li>farmer의 crop이 100이면 수고했다고 말해줍니다.</li>
+      <li>다른 farmer 들은 그냥 인사를 합니다.</li>
+      <li>만약 purchaser의 상태가 OnTheWay면 며칠 남았는지를 표시합니다(int는 days를 가르킵니다.)</li>
+      <li>다른 모든 경우에는 “Good!”을 출력합니다.</li>
+    </ol>
+  </li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">farmer1</span> <span class="o">=</span> <span class="nx">Farmer</span><span class="p">({</span><span class="na">fname</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Bibi</span><span class="dl">"</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">47</span><span class="p">,</span> <span class="na">crop</span><span class="p">:</span> <span class="p">{</span><span class="na">cname</span><span class="p">:</span> <span class="dl">"</span><span class="s2">potato</span><span class="dl">"</span><span class="p">,</span> <span class="na">quantity</span><span class="p">:</span> <span class="mi">100</span><span class="p">}});</span>
+
+<span class="kd">let</span> <span class="nx">message</span> <span class="o">=</span> <span class="k">switch</span> <span class="nx">farmer1</span> <span class="p">{</span>
+    <span class="o">|</span> <span class="nx">Farmer</span><span class="p">({</span><span class="na">fname</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Matt</span><span class="dl">"</span> <span class="o">|</span> <span class="dl">"</span><span class="s2">John</span><span class="dl">"</span><span class="p">,</span> <span class="nx">age</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">Hi~!</span><span class="dl">"</span> <span class="o">++</span> <span class="dl">"</span><span class="s2">, are you </span><span class="dl">"</span> <span class="o">++</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Int</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="nx">age</span><span class="p">)</span> <span class="o">++</span> <span class="dl">"</span><span class="s2"> years old?</span><span class="dl">"</span><span class="p">;</span>
+        <span class="c1">//Js.log(fname)</span>
+    <span class="p">}</span>
+    <span class="o">|</span> <span class="nx">Farmer</span><span class="p">({</span><span class="nx">fname</span><span class="p">,</span> <span class="na">crop</span><span class="p">:</span> <span class="p">{</span><span class="nx">cname</span><span class="p">,</span> <span class="na">quantity</span><span class="p">:</span> <span class="mi">100</span><span class="p">}})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+       <span class="dl">"</span><span class="s2">Hi, </span><span class="dl">"</span> <span class="o">++</span> <span class="nx">fname</span> <span class="o">++</span> <span class="dl">"</span><span class="s2"> !, whoa you've raised </span><span class="dl">"</span> <span class="o">++</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Int</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="nx">quantity</span><span class="p">)</span> <span class="o">++</span> <span class="dl">"</span><span class="s2"> of </span><span class="dl">"</span><span class="o">++</span> <span class="nx">cname</span> <span class="o">++</span> <span class="dl">"</span><span class="s2">!</span><span class="dl">"</span>
+    <span class="p">}</span>
+    <span class="o">|</span> <span class="nx">Farmer</span><span class="p">({</span><span class="nx">fname</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">Hello~</span><span class="dl">"</span> <span class="o">++</span> <span class="nx">fname</span> <span class="o">++</span> <span class="dl">"</span><span class="s2">!</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="o">|</span> <span class="nx">Purchaser</span><span class="p">({</span><span class="nx">name</span><span class="p">,</span> <span class="na">status</span><span class="p">:</span> <span class="nx">OnTheWay</span><span class="p">(</span><span class="nx">daysLeft</span><span class="p">)})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">You have </span><span class="dl">"</span> <span class="o">++</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Int</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="nx">daysLeft</span><span class="p">)</span> <span class="o">++</span> <span class="dl">"</span><span class="s2"> days left</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="o">|</span> <span class="nx">_</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">Good!</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>위의 코드의 결과는
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Hi</span><span class="p">,</span> <span class="nx">Bibi</span> <span class="o">!</span><span class="p">,</span> <span class="nx">whoa</span> <span class="nx">you</span><span class="dl">'</span><span class="s1">ve raised 100 of potato!
+</span></code></pre></div>    </div>
+    <p>입니다. 왜 그런지 천천히 직접 음미해보시죠!</p>
+  </li>
+  <li>Farmer(payload) 와 같은 variant는 _로 안의 payload를 완전히 무시할 수 있습니다. 아래와 같이요
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">switch</span> <span class="nx">person1</span> <span class="p">{</span>
+<span class="o">|</span> <span class="nx">Farmer</span><span class="p">(</span><span class="nx">_</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Hi Person</span><span class="dl">"</span><span class="p">)</span>
+<span class="o">|</span> <span class="nx">Person</span><span class="p">(</span><span class="nx">_</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Hey farmer</span><span class="dl">"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>위의 농부가 나온 예시에서, 작물이 100kg이 넘으면 축하한다고 얘기를 해봅시다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">|</span> <span class="nx">Farmer</span><span class="p">({</span><span class="nx">fname</span><span class="p">,</span> <span class="na">crop</span><span class="p">:</span> <span class="p">{</span><span class="nx">quantity</span><span class="p">}})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+       <span class="k">if</span> <span class="nx">quantity</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="p">{</span>
+           <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Congratz!!</span><span class="dl">"</span><span class="p">)</span>
+       <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>
+    <p>이런식의 연산도 가능합니다.</p>
+  </li>
+  <li>
+    <p>또한 중요한 사실은 패턴으로 넘겨 받는 값은 무조건 literal(실값) 만 가능하다는 것입니다. let binding 된 변수는 받을 수 없습니다.</p>
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">coordinates</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="kd">let</span> <span class="nx">centerY</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="k">switch</span> <span class="nx">coordinates</span> <span class="p">{</span>
+<span class="o">|</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">centerY</span><span class="p">,</span> <span class="nx">_</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+<span class="p">}</span> <span class="c1">//centerY가 안됩니다!</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="exhaustiveness-check">Exhaustiveness check</h2>
+<ul>
+  <li>if-else 문이나 다른 조건문들로 범벅된 코드에 구멍이 하나도 없다고 정말 단언할 수 있을까요? 매우 어려울 겁니다. 놀랍게도 ReScript는 컴파일 타임에 이 논리적 구멍을 검증해주는 일도 해줍니다!!</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">myNullableValue</span> <span class="o">=</span> <span class="nx">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="k">switch</span> <span class="nx">myNullableValue</span> <span class="p">{</span>
+<span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">value is present</span><span class="dl">"</span><span class="p">)</span>
+<span class="o">|</span> <span class="nx">None</span> <span class="o">=&gt;</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">value is absent</span><span class="dl">"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>
+    <p>여기서 None을 지우면 컴파일러가 경고를 <del>한다고 하는데 왜 제꺼에선 안할까요</del> 합니다. 이렇듯 논리의 구멍을 찾아서 경고해주는 훌륭한 역할도 한다고 하네요 ^^;</p>
+  </li>
+  <li>
+    <p>끝으로 절차피클에 찌든 JS 코드로 시작해서 간결하고 아름다운 ReScript 코드로 끝맺는 변천사를 보여드리겠습니다.</p>
+  </li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">optionBoolToBool</span> <span class="o">=</span> <span class="nx">opt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">opt</span> <span class="o">==</span> <span class="nx">None</span> <span class="p">{</span>
+    <span class="kc">false</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">opt</span> <span class="o">===</span> <span class="nx">Some</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kc">true</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="kc">false</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>opt에 값이 없거나 false면 false를 리턴하고 아니면 true를 리턴하는 매우 간단한 함수입니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">optionBoolToBool</span> <span class="o">=</span> <span class="nx">opt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="nx">opt</span> <span class="p">{</span>
+  <span class="o">|</span> <span class="nx">None</span> <span class="o">=&gt;</span> <span class="kc">false</span>
+  <span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="p">?</span> <span class="kc">true</span> <span class="p">:</span> <span class="kc">false</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>3항 연산자와 패턴매칭 적용</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">optionBoolToBool</span> <span class="o">=</span> <span class="nx">opt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="nx">opt</span> <span class="p">{</span>
+  <span class="o">|</span> <span class="nx">None</span> <span class="o">=&gt;</span> <span class="kc">false</span>
+  <span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kc">true</span>
+  <span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kc">false</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>좀 더 풀어서 적어보았다가,</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">optionBoolToBool</span> <span class="o">=</span> <span class="nx">opt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="nx">opt</span> <span class="p">{</span>
+  <span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="kc">true</span>
+  <span class="o">|</span> <span class="nx">_</span> <span class="o">=&gt;</span> <span class="kc">false</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>exhaustiveness를 _로 적용도 해보았다가</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">optionBoolToBool</span> <span class="o">=</span> <span class="nx">opt</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="nx">opt</span> <span class="p">{</span>
+  <span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">trueOrFalse</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">trueOrFalse</span>
+  <span class="o">|</span> <span class="nx">None</span> <span class="o">=&gt;</span> <span class="kc">false</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>간결하게 정리!</li>
+</ul>
+
+<p>오늘은 이렇게 pattern matching에 대해 알아보았습니다. 갈 길이 멀지만, 그래도 조금 더 알게되었다는 사실을 새기며 나아갑시다!</p>
+
+  </div><a class="u-url" href="/jekyll/update/2020/09/04/pattern-matching.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">틀뢴의 개발 블로그</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">틀뢴의 개발 블로그</li><li><a class="u-email" href="mailto:tlonist.sang@gmail.com">tlonist.sang@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/tlonist.sang"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">tlonist.sang</span></a></li><li><a href="https://www.twitter.com/I+don%27t+do+twitter"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">I don&#39;t do twitter</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>팡쇼날(functional) 프로그래밍, ReScript, 그 외 잡다한 것들!</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

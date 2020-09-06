@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Currying, Tuple, 간단한 module 만들기(reasonml) | 틀뢴의 개발 블로그</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Currying, Tuple, 간단한 module 만들기(reasonml)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Currying 이란? 다중 인자를 갖는 하나의 함수를 단일 인자를 갖는 여러개의 함수로 변환하는 기법입니다. x = f(a,b,c) =&gt; x = i(c), i = h(b), h = g(a) =&gt; x = g(a)(b)(c)" />
+<meta property="og:description" content="Currying 이란? 다중 인자를 갖는 하나의 함수를 단일 인자를 갖는 여러개의 함수로 변환하는 기법입니다. x = f(a,b,c) =&gt; x = i(c), i = h(b), h = g(a) =&gt; x = g(a)(b)(c)" />
+<link rel="canonical" href="http://localhost:4000/jekyll/update/2020/08/20/currying.html" />
+<meta property="og:url" content="http://localhost:4000/jekyll/update/2020/08/20/currying.html" />
+<meta property="og:site_name" content="틀뢴의 개발 블로그" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-20T17:53:57+09:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/jekyll/update/2020/08/20/currying.html","headline":"Currying, Tuple, 간단한 module 만들기(reasonml)","dateModified":"2020-08-20T17:53:57+09:00","datePublished":"2020-08-20T17:53:57+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/jekyll/update/2020/08/20/currying.html"},"description":"Currying 이란? 다중 인자를 갖는 하나의 함수를 단일 인자를 갖는 여러개의 함수로 변환하는 기법입니다. x = f(a,b,c) =&gt; x = i(c), i = h(b), h = g(a) =&gt; x = g(a)(b)(c)","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="틀뢴의 개발 블로그" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">틀뢴의 개발 블로그</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Currying, Tuple, 간단한 module 만들기(reasonml)</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-08-20T17:53:57+09:00" itemprop="datePublished">Aug 20, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h3 id="currying-이란"><strong>Currying 이란?</strong></h3>
+<ul>
+  <li>다중 인자를 갖는 하나의 함수를 단일 인자를 갖는 여러개의 함수로 변환하는 기법입니다. x = f(a,b,c) =&gt; x = i(c), i = h(b), h = g(a) =&gt; x = g(a)(b)(c)</li>
+</ul>
+
+<p>코드) 세 수의 곱셈을 currying으로 해봅시다.</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">multiply</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">,</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span><span class="o">*</span><span class="nx">b</span><span class="o">*</span><span class="nx">c</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">curried_multiply</span><span class="p">(</span><span class="nx">a</span><span class="p">){</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">a</span><span class="o">*</span><span class="nx">b</span><span class="o">*</span><span class="nx">c</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">result1</span> <span class="o">=</span> <span class="nx">multiply</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span> <span class="c1">// 6</span>
+<span class="kd">let</span> <span class="nx">result2</span> <span class="o">=</span> <span class="nx">curried_multiply</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="mi">2</span><span class="p">)(</span><span class="mi">3</span><span class="p">);</span> <span class="c1">// 6</span>
+</code></pre></div></div>
+<ul>
+  <li>curried_multiply가 적용되는 방식을 살펴보면 다음과 같다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">//1. curried_multiply(1)은 아래를 반환. </span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">a</span><span class="o">*</span><span class="nx">b</span><span class="o">*</span><span class="nx">c</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">//2. curried_multiply(1)(2)은 아래를 반환. </span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">a</span><span class="o">*</span><span class="nx">b</span><span class="o">*</span><span class="nx">c</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">//3. 마지막 curried_multiply(1)(2)(3)이 호출되면 파라미터에 값이 바인딩되며 결과가 나옴.</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="mi">3</span>
+
+</code></pre></div></div>
+<ul>
+  <li>currying의 장점 <a href="https://softwareengineering.stackexchange.com/questions/185585/what-is-the-advantage-of-currying">link</a>
+    <ul>
+      <li>함수 로직이 모듈화되어 각각이 재사용 될 수 있게 합니다</li>
+      <li>추상화의 여지 제공합니다</li>
+      <li>관심사를 분리하여 로직을 더 아토믹하게 합니다 (다 비슷한 말이네!)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>덧) React-Redux 사용시 hook을 사용하지 않으면 말미에 들어가는 connect()</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">connect</span><span class="p">(</span><span class="nx">mapStateToProps</span><span class="p">,</span> <span class="nx">mapDispatchToProps</span><span class="p">)(</span><span class="nx">MyApp</span><span class="p">)</span>
+</code></pre></div></div>
+<p>표현이 처음엔 생소했는데, 지금 보니 currying을 활용한 함수형 프로그래밍스러운 설계였다는 생각이 드네요.</p>
+
+<h3 id="reasonml-에서의-tuple-사용-link">Reasonml 에서의 tuple 사용 <a href="https://reasonml.github.io/docs/en/basic-structures#tuple">link</a></h3>
+
+<ul>
+  <li>tuple은 immutable, constant size, heterogenous collections of items 이라는 특징을 갖는 타입입니다.
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">let</span> <span class="nx">pair</span> <span class="o">=</span> <span class="p">(</span><span class="dl">"</span><span class="s2">name</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">age</span><span class="dl">"</span><span class="p">);</span>
+  <span class="kd">let</span> <span class="nx">triple</span> <span class="o">=</span> <span class="p">(</span><span class="dl">"</span><span class="s2">hello</span><span class="dl">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+
+  <span class="nx">Js</span><span class="p">.</span><span class="nx">log2</span><span class="p">(</span><span class="dl">"</span><span class="s2">pair=&gt;</span><span class="dl">"</span><span class="p">,</span> <span class="nx">pair</span><span class="p">);</span> <span class="c1">//pair=&gt; [ 'name', 'age' ]</span>
+  <span class="nx">Js</span><span class="p">.</span><span class="nx">log2</span><span class="p">(</span><span class="dl">"</span><span class="s2">triple=&gt;</span><span class="dl">"</span><span class="p">,</span><span class="nx">triple</span><span class="p">);</span> <span class="c1">//triple=&gt; [ 'hello', 1, true ]</span>
+</code></pre></div>    </div>
+  </li>
+  <li>아래와 같은 destructuring도 가능합니다. 언더스코어(_)는 <strong>인자로서 자리는 차지해야하지만 아무값도 전달하고 싶지 않을 때</strong> 사용하는 syntax 입니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">let</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">second</span><span class="p">)</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+    <span class="kd">let</span> <span class="p">(</span><span class="nx">first</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">third</span><span class="p">)</span> <span class="o">=</span> <span class="nx">triple</span><span class="p">;</span>
+
+    <span class="nx">Js</span><span class="p">.</span><span class="nx">log2</span><span class="p">(</span><span class="dl">"</span><span class="s2">second=&gt;</span><span class="dl">"</span><span class="p">,</span> <span class="nx">second</span><span class="p">);</span> <span class="c1">//second=&gt; age</span>
+    <span class="nx">Js</span><span class="p">.</span><span class="nx">log2</span><span class="p">(</span><span class="dl">"</span><span class="s2">first=&gt;</span><span class="dl">"</span><span class="p">,</span> <span class="nx">first</span><span class="p">);</span> <span class="c1">//first=&gt; hello</span>
+    <span class="nx">Js</span><span class="p">.</span><span class="nx">log2</span><span class="p">(</span><span class="dl">"</span><span class="s2">third=&gt;</span><span class="dl">"</span><span class="p">,</span> <span class="nx">third</span><span class="p">);</span> <span class="c1">//third=&gt; true</span>
+</code></pre></div></div>
+
+<ul>
+  <li>패턴 매칭은 아래처럼 할 수 있습니다.
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">let</span> <span class="nx">triple</span> <span class="o">=</span> <span class="p">(</span><span class="dl">"</span><span class="s2">hello</span><span class="dl">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+
+  <span class="kd">let</span> <span class="nx">pattern_match</span> <span class="o">=</span> <span class="p">(</span><span class="nx">triple</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">switch</span> <span class="p">(</span><span class="nx">triple</span><span class="p">)</span> <span class="p">{</span>
+  <span class="o">|</span> <span class="p">(</span><span class="dl">"</span><span class="s2">hello</span><span class="dl">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">print_endline</span><span class="p">(</span><span class="dl">"</span><span class="s2">first</span><span class="dl">"</span><span class="p">);</span>
+  <span class="o">|</span> <span class="p">(</span><span class="dl">"</span><span class="s2">none</span><span class="dl">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">print_endline</span><span class="p">(</span><span class="dl">"</span><span class="s2">second</span><span class="dl">"</span><span class="p">);</span>
+  <span class="o">|</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">print_endline</span><span class="p">(</span><span class="dl">"</span><span class="s2">third</span><span class="dl">"</span><span class="p">);</span>
+  <span class="o">|</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">_</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">print_endline</span><span class="p">(</span><span class="dl">"</span><span class="s2">default</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="c1">// 어떤 결과가 출력될까요~~!!!</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="reasonml에서-module을-만들어-export-하기-link">Reasonml에서 Module을 만들어 export 하기 <a href="https://reasonml.github.io/docs/en/module#docsNav">link</a></h3>
+<ul>
+  <li>
+    <p>모듈은 작은 파일처럼 사용할 수 있고, 타입 정의, let 바인딩, nested 모듈등으로도 활용할 수 있습니다.</p>
+  </li>
+  <li>
+    <p>원할때마다 Yo! 를 console에 출력하는 간단한 모듈을 만들어서 사용해보겠습니다.</p>
+  </li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span> <span class="nx">SayYo</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">speak</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">print_endline</span><span class="p">(</span><span class="dl">"</span><span class="s2">Yo!</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<ul>
+  <li>이상 모듈 파일입니다. yo.re로 저장되어 있습니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">Yo</span><span class="p">.</span><span class="nx">SayYo</span><span class="p">.</span><span class="nx">speak</span><span class="p">();</span>       
+<span class="p">}</span>
+<span class="nx">test</span><span class="p">();</span>
+</code></pre></div></div>
+<ul>
+  <li>모듈을 불러와서 테스트할 test_yo.re 파일입니다.</li>
+  <li>모듈안의 함수나 값을 사용할 때는 단순히 module_name 뒤에 .을 붙이면 됩니다.</li>
+</ul>
+
+  </div><a class="u-url" href="/jekyll/update/2020/08/20/currying.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">틀뢴의 개발 블로그</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">틀뢴의 개발 블로그</li><li><a class="u-email" href="mailto:tlonist.sang@gmail.com">tlonist.sang@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/tlonist.sang"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">tlonist.sang</span></a></li><li><a href="https://www.twitter.com/I+don%27t+do+twitter"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">I don&#39;t do twitter</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>팡쇼날(functional) 프로그래밍, ReScript, 그 외 잡다한 것들!</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

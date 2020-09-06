@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>ReScript의 여러 문법 알아보기 - 2, type | 틀뢴의 개발 블로그</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="ReScript의 여러 문법 알아보기 - 2, type" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="킹 갓 디바인 셀레스쳘 언어 ReScript의 문법을 알아보는 두번째 시간입니다. Types 파라미터 (a.k.a 제너릭)" />
+<meta property="og:description" content="킹 갓 디바인 셀레스쳘 언어 ReScript의 문법을 알아보는 두번째 시간입니다. Types 파라미터 (a.k.a 제너릭)" />
+<link rel="canonical" href="http://localhost:4000/jekyll/update/2020/09/02/rescript-grammar2.html" />
+<meta property="og:url" content="http://localhost:4000/jekyll/update/2020/09/02/rescript-grammar2.html" />
+<meta property="og:site_name" content="틀뢴의 개발 블로그" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-02T17:53:57+09:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/jekyll/update/2020/09/02/rescript-grammar2.html","headline":"ReScript의 여러 문법 알아보기 - 2, type","dateModified":"2020-09-02T17:53:57+09:00","datePublished":"2020-09-02T17:53:57+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/jekyll/update/2020/09/02/rescript-grammar2.html"},"description":"킹 갓 디바인 셀레스쳘 언어 ReScript의 문법을 알아보는 두번째 시간입니다. Types 파라미터 (a.k.a 제너릭)","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="틀뢴의 개발 블로그" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">틀뢴의 개발 블로그</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">ReScript의 여러 문법 알아보기 - 2, type</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-09-02T17:53:57+09:00" itemprop="datePublished">Sep 2, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>킹 갓 디바인 셀레스쳘 언어 ReScript의 문법을 알아보는 두번째 시간입니다.</p>
+<h2 id="types-파라미터-aka-제너릭">Types 파라미터 (a.k.a 제너릭)</h2>
+
+<ul>
+  <li>지난 시간은 주로 primitive type들, string, boolean, int, float, unit 을 알아보았는데요, 이번에는 조금 특별한 경우들을 알아보겠습니다. 다른 언어들의 ‘제너릭’과 비슷한 기능을 하는 타입입니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nx">type</span> <span class="nx">coordinates</span> <span class="o">&lt;</span><span class="dl">'</span><span class="s1">a&gt; = (</span><span class="dl">'</span><span class="nx">a</span><span class="p">,</span> <span class="dl">'</span><span class="s1">a, </span><span class="dl">'</span><span class="nx">a</span><span class="p">)</span>
+
+    <span class="kd">let</span> <span class="nx">a</span><span class="p">:</span> <span class="nx">coordinates</span><span class="o">&lt;</span><span class="nx">int</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="kd">let</span> <span class="nx">b</span><span class="p">:</span> <span class="nx">coordinates</span><span class="o">&lt;</span><span class="nx">float</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.5</span><span class="p">,</span> <span class="mf">20.5</span><span class="p">,</span> <span class="mf">20.5</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>위의 경우 ‘a 에 int가 들어가면 int 형식으로, float이 들어가면 float으로 치환되어 적용됩니다. 사실 ReScript의 타입 추론은 매우 강력해서, ‘a 표현이 없이도 전부 잘 동작합니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// `array&lt;string&gt;`으로 자동 추론됩니다.</span>
+<span class="kd">let</span> <span class="nx">greetings</span> <span class="o">=</span> <span class="p">[</span><span class="dl">"</span><span class="s2">hello</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">world</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">how are you</span><span class="dl">"</span><span class="p">]</span>
+
+<span class="c1">// 아래의 경우는 에러가 납니다.</span>
+<span class="kd">let</span> <span class="nx">greetings</span> <span class="o">=</span> <span class="p">[</span><span class="dl">"</span><span class="s2">hello</span><span class="dl">"</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="dl">"</span><span class="s2">how are you</span><span class="dl">"</span><span class="p">]</span>
+
+<span class="c1">//   let greetings = ["hello", 12, "how are you"]</span>
+<span class="c1">//   This has type:</span>
+<span class="c1">//     int</span>
+<span class="c1">//   But somewhere wanted:</span>
+<span class="c1">//     string</span>
+</code></pre></div></div>
+
+<ul>
+  <li>언젠가는 자세히 다루려고 했는데, 자기 자신을 element로 가지는 재귀적 타입은 아래와 같이 나타납니다. 이를 이용해서 여러 자료구조나 알고리즘을 구현할..수 있겠죠?
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">rec</span> <span class="nx">person</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="na">friends</span><span class="p">:</span> <span class="nx">array</span><span class="o">&lt;</span><span class="nx">person</span><span class="o">&gt;</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>상호 재귀적 타입은 어떻게 될까요? 이 섹션을 보기전에 따로 시도해봤가 포기했는데, 바로 아래처럼 구현가능합니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">rec</span> <span class="nx">student</span> <span class="o">=</span> <span class="p">{</span><span class="na">taughtBy</span><span class="p">:</span> <span class="nx">teacher</span><span class="p">}</span>
+<span class="nx">and</span> <span class="nx">teacher</span> <span class="o">=</span> <span class="p">{</span><span class="na">students</span><span class="p">:</span> <span class="nx">array</span><span class="o">&lt;</span><span class="nx">student</span><span class="o">&gt;</span><span class="p">}</span>
+
+<span class="c1">//이렇게 사용되겠네요</span>
+<span class="kd">let</span> <span class="nx">malfarty</span><span class="p">:</span> <span class="nx">teacher</span> <span class="o">=</span> <span class="p">{</span><span class="na">students</span><span class="p">:[]};</span>
+<span class="kd">let</span> <span class="nx">harrykim</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">taughtBy</span><span class="p">:</span> <span class="nx">malfarty</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>ReScript는 강력하고 고집센 타입 시스템을 자랑하지만서도, 약간의 인간미(!)는 남겨두었습니다. 바로 “%identity”를 통한 타입 변환인데요, 아래의 예시를 살펴보겠습니다.
+```javascript
+external convertToFloat : int =&gt; float = “%identity”
+let age = 10
+let gpa = 2.1 +. convertToFloat(age) //12.1</li>
+</ul>
+
+<p>external convertToString : int =&gt; string = “%identity”
+let age = “hello, “
+let gpa = 123
+Js.log(age++convertToString(123)); //hello, 123
+```</p>
+
+  </div><a class="u-url" href="/jekyll/update/2020/09/02/rescript-grammar2.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">틀뢴의 개발 블로그</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">틀뢴의 개발 블로그</li><li><a class="u-email" href="mailto:tlonist.sang@gmail.com">tlonist.sang@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/tlonist.sang"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">tlonist.sang</span></a></li><li><a href="https://www.twitter.com/I+don%27t+do+twitter"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">I don&#39;t do twitter</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>팡쇼날(functional) 프로그래밍, ReScript, 그 외 잡다한 것들!</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

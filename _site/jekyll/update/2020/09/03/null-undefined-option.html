@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Null, Undefined and Option | 틀뢴의 개발 블로그</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Null, Undefined and Option" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="오늘은 ReScript에서 Null, Undefined를 다루는 방법과 option syntax에 대해서 알아보겠습니다. ReScript 자체에는 null 혹은 undefined 라는 개념이 없습니다. 이건 굉장히 좋은 것으로, JS에는 허다하게 나오는 ~가 undefined 되었다 혹은 null 값을 참조하고 있다 등의 오류가 아예 나오지 않는 것을 의미합니다." />
+<meta property="og:description" content="오늘은 ReScript에서 Null, Undefined를 다루는 방법과 option syntax에 대해서 알아보겠습니다. ReScript 자체에는 null 혹은 undefined 라는 개념이 없습니다. 이건 굉장히 좋은 것으로, JS에는 허다하게 나오는 ~가 undefined 되었다 혹은 null 값을 참조하고 있다 등의 오류가 아예 나오지 않는 것을 의미합니다." />
+<link rel="canonical" href="http://localhost:4000/jekyll/update/2020/09/03/null-undefined-option.html" />
+<meta property="og:url" content="http://localhost:4000/jekyll/update/2020/09/03/null-undefined-option.html" />
+<meta property="og:site_name" content="틀뢴의 개발 블로그" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-03T17:53:57+09:00" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/jekyll/update/2020/09/03/null-undefined-option.html","headline":"Null, Undefined and Option","dateModified":"2020-09-03T17:53:57+09:00","datePublished":"2020-09-03T17:53:57+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/jekyll/update/2020/09/03/null-undefined-option.html"},"description":"오늘은 ReScript에서 Null, Undefined를 다루는 방법과 option syntax에 대해서 알아보겠습니다. ReScript 자체에는 null 혹은 undefined 라는 개념이 없습니다. 이건 굉장히 좋은 것으로, JS에는 허다하게 나오는 ~가 undefined 되었다 혹은 null 값을 참조하고 있다 등의 오류가 아예 나오지 않는 것을 의미합니다.","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="틀뢴의 개발 블로그" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">틀뢴의 개발 블로그</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Null, Undefined and Option</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-09-03T17:53:57+09:00" itemprop="datePublished">Sep 3, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>오늘은 ReScript에서 Null, Undefined를 다루는 방법과 option syntax에 대해서 알아보겠습니다.</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+<ul>
+  <li>
+    <p>ReScript 자체에는 null 혹은 undefined 라는 개념이 없습니다. 이건 <strong>굉장히 좋은</strong> 것으로, JS에는 허다하게 나오는 ~가 undefined 되었다 혹은 null 값을 참조하고 있다 등의 오류가 <strong>아예 나오지 않는</strong> 것을 의미합니다.</p>
+  </li>
+  <li>
+    <p>이런 엄격한 null / undefined 체킹을 하기 위해, ReScript에서는 Option 이라는 키워드를 사용합니다. 자바의 Optional과 일맥상통하는 개념입니다. <del>하지만 거의 쓰는걸 못봤습니다.</del></p>
+  </li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">type</span> <span class="nx">option</span><span class="o">&lt;</span><span class="dl">'</span><span class="s1">a&gt; = None | Some(</span><span class="dl">'</span><span class="nx">a</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>살펴보면, Option이란 특별한 값이 아니라 None 혹은 Some 값을 갖는 Variant의 한 종류임을 알 수 있습니다. 예시를 보겠습니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">ReScriptExpert</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">yes</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">//ReScriptExpert라는 값의 'null'일 수도 있는 가능성을 어떻게 표현할 수 있을까요?</span>
+
+<span class="kd">let</span> <span class="nx">ReScriptExpert</span> <span class="o">=</span> 
+    <span class="k">if</span> <span class="nx">knowsOptional</span> <span class="p">{</span>
+        <span class="nx">Some</span><span class="p">(</span><span class="dl">"</span><span class="s2">yes</span><span class="dl">"</span><span class="p">)</span>
+    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+        <span class="nx">None</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>이런식으로 Some()과 None으로 wrapping 하는것이 가능합니다. 나중에 이 ReScriptExpert라는 값을 꺼내기 위해서는 Switch 문 안의 조작이 필요합니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">switch</span> <span class="nx">ReScriptExpert</span> <span class="p">{</span>
+<span class="o">|</span> <span class="nx">None</span> <span class="o">=&gt;</span>
+  <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">The person is not an expert</span><span class="dl">"</span><span class="p">)</span>
+<span class="o">|</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">answer</span><span class="p">)</span> <span class="o">=&gt;</span>
+  <span class="nx">Js</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">answer</span> <span class="o">++</span> <span class="dl">"</span><span class="s2">The person is an expert!</span><span class="dl">"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li>
+    <p>ReScript에선 null이 될 수 있는 요소는 optional로 감싸지기 때문에, null 에러가 없습니다. 다시 말해, null 인경우에 대한 처리가 항상 컴파일 시점에 이뤄지므로 예상치 못한 null 에러가 발생하지 않는 것입니다.</p>
+  </li>
+  <li>이 None은 그럼 무엇일까요? Null 일까요 undefined 일까요?
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">None</span> <span class="c1">//ReScript</span>
+<span class="kd">let</span> <span class="nx">x</span> <span class="c1">//JavaScript</span>
+</code></pre></div>    </div>
+  </li>
+  <li>None은 undefined 였습니다. 꽤나 <a href="https://github.com/rescript-lang/rescript-compiler/issues/4016">내부적 논의</a>가 있었던 것 같은데요, 결론은 ‘undefined로 정했고 두개를 동시에 지원하기엔 구현적 어려움이 있다’ 정도 인 것 같습니다.</li>
+</ul>
+
+<p>Option을 사용할 때는 유의해야 할 점이 몇가지 있습니다.</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">Some</span><span class="p">(</span><span class="nx">Some</span><span class="p">(</span><span class="mi">10</span><span class="p">)));</span>
+<span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">None</span><span class="p">)</span> 
+</code></pre></div></div>
+
+<p>각각이 JS로 트랜스파일 된 결과입니다.</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">Caml_option</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>이런 중첩된 Option은 굉장히 굉장히 피곤할 수 있습니다.
+    <ol>
+      <li>Option wrapping이 언제 끝날 지 미리 알 수 없으며,</li>
+      <li>undefined로 define 하는게 의미 있는 경우가 없기 때문입니다.</li>
+    </ol>
+  </li>
+  <li>따라서 <a href="https://rescript-lang.org/docs/manual/latest/null-undefined-option">공식문서</a>에서는 절대로
+    <ol>
+      <li>Option을 중첩해서 사용하지 말 것과</li>
+      <li>JS에서 오는 값들을 option으로 받지 말고, 비 다형적(non-polymorphic)이고 구체적인 타입으로 명시할 것을 당부하고 있습니다.</li>
+    </ol>
+  </li>
+  <li>많은 경우에, JS 값은 null 과 undefined로 정의될 때가 있습니다. (value 와 undefined가 아니라요). 이 경우는 어떻게 하면 될까요? Option은 Some과 None 값만 가지기에 null에 대한 체크를 할 수 없습니다. 이럴 때 사용하는 것이 Js.Nullable 입니다. 예시를 보겠습니다.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">bs</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="dl">"</span><span class="s2">MyConstant</span><span class="dl">"</span><span class="p">)</span> <span class="nx">external</span> <span class="nx">myId</span><span class="p">:</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Nullable</span><span class="p">.</span><span class="nx">t</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">myId</span><span class="dl">"</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">bs</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="dl">"</span><span class="s2">MyIdValidator</span><span class="dl">"</span><span class="p">)</span> <span class="nx">external</span> <span class="nx">validate</span><span class="p">:</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Nullable</span><span class="p">.</span><span class="nx">t</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span> <span class="o">=&gt;</span> <span class="nx">bool</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">validate</span><span class="dl">"</span>
+<span class="kd">let</span> <span class="nx">personId</span><span class="p">:</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Nullable</span><span class="p">.</span><span class="nx">t</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nx">Js</span><span class="p">.</span><span class="nx">Nullable</span><span class="p">.</span><span class="k">return</span><span class="p">(</span><span class="dl">"</span><span class="s2">abc123</span><span class="dl">"</span><span class="p">)</span>
+
+<span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">validate</span><span class="p">(</span><span class="nx">personId</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li>이렇게 하면 return 파트에서 스트링 값을 nullable string으로 감쌉니다. 즉, 받는 측에서는 이 string의 값이 존재할수도, null일수도, undefined 일 수도 있게 되는 것이죠!</li>
+</ul>
+
+  </div><a class="u-url" href="/jekyll/update/2020/09/03/null-undefined-option.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">틀뢴의 개발 블로그</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">틀뢴의 개발 블로그</li><li><a class="u-email" href="mailto:tlonist.sang@gmail.com">tlonist.sang@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/tlonist.sang"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">tlonist.sang</span></a></li><li><a href="https://www.twitter.com/I+don%27t+do+twitter"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">I don&#39;t do twitter</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>팡쇼날(functional) 프로그래밍, ReScript, 그 외 잡다한 것들!</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
