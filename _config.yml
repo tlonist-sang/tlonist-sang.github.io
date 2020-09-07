@@ -22,7 +22,7 @@ title: 함수형 프로그래밍과 개발
 email: tlonist.sang@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://tlonist-sang.github.io/ft-TIL/" # the base hostname & protocol for your site, e.g. http://example.com
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll
 
