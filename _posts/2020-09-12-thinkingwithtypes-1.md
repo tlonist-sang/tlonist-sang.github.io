@@ -31,19 +31,19 @@ type l = a | b | c | d
 ### 1.2 Sum, product and exponential type
 
 - Type으로 sum과 product, 그리고 exponential 을 나타내보겠습니다.
-|Maybe a| = 1 + |a|
-|Either a b| = |a| + |b|
-|(a,b)| = |a| * |b|
+[Maybe a] = 1 + [a]
+[Either a b] = [a] + [b]
+[(a,b)] = [a] * [b]
 
-- |Maybe a| = 1 + |a| 는 nothing or a입니다. 따라서 nothing을 나타내는 상태 1에 a의 상태갯수인 |a|가 더해져 1+a
-- |Either a b| = |a| + |b| 는 a 혹은 b 이므로 두 개의 상태가 합쳐진 |a| + |b|가 됩니다.
-- |(a,b)| = |a| * |b| 에서 (a,b)가 조합가능한 쌍을 나타낼 때, (a,b)의 가지수는 a*b가 되므로 이것이 성립합니다.
+- [Maybe a] = 1 + [a] 는 nothing or a입니다. 따라서 nothing을 나타내는 상태 1에 a의 상태갯수인 |a|가 더해져 1+a
+- [Either a b] = [a] + [b] 는 a 혹은 b 이므로 두 개의 상태가 합쳐진 |a| + |b|가 됩니다.
+- [(a,b)] = [a] * [b] 에서 (a,b)가 조합가능한 쌍을 나타낼 때, (a,b)의 가지수는 a*b가 되므로 이것이 성립합니다.
 
 - 그렇다면 exponential은 어떻게 표현될까요?
-|a->b| = |b|^|a| 
+[a->b] = [b]^[a] 
 - 이유는 모든 a의 값에 대해서 b의 가능성이 있기 때문입니다. 예를 들어 a가 (가위, 바위, 보)고 b가 bool(이긴다, 진다)이면, 각각 가위를 냈을 때 이기고 지는 경우, 바위를 냈을 때, 보를 냈을 때의 경우의 수가 있기 때문에 2*2*2 = 8이 가능한 모든 결과입니다.
 
 
-### 1.4 Curry-Howard Isomorphism (1.3은 생략)
+### 1.3과 1.4 Curry-Howard Isomorphism 은 내일 이어서.. 
 
 
