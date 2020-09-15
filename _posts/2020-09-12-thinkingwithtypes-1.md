@@ -35,8 +35,8 @@ type l = a | b | c | d
 [Either a b] = [a] + [b]
 [(a,b)] = [a] * [b]
 
-- [Maybe a] = 1 + [a] 는 nothing or a입니다. 따라서 nothing을 나타내는 상태 1에 a의 상태갯수인 |a|가 더해져 1+a
-- [Either a b] = [a] + [b] 는 a 혹은 b 이므로 두 개의 상태가 합쳐진 |a| + |b|가 됩니다.
+- [Maybe a] = 1 + [a] 는 nothing or a입니다. 따라서 nothing을 나타내는 상태 1에 a의 상태갯수인 [a]가 더해져 1+a
+- [Either a b] = [a] + [b] 는 a 혹은 b 이므로 두 개의 상태가 합쳐진 [a] + [b]가 됩니다.
 - [(a,b)] = [a] * [b] 에서 (a,b)가 조합가능한 쌍을 나타낼 때, (a,b)의 가지수는 a*b가 되므로 이것이 성립합니다.
 
 - 그렇다면 exponential은 어떻게 표현될까요?
