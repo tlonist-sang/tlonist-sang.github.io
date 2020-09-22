@@ -25,6 +25,7 @@ baseurl: "/Today-I-learned/" # the subpath of your site, e.g. /blog
 url: "https://tlonist-sang.github.io/Today-I-learned/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  tlonist-sang
+google_analytics: UA-139982514-2 # replace with your GA tracking identifier
 
 # Build settings
 theme: minima
