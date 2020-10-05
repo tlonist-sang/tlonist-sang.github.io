@@ -20,6 +20,7 @@ comments: true
 ## 함수형 프로그래밍과 타입 시스템
 
 [![img]({{ "/assets/orthogonal.png"|absolute_url}})]({{ "/assets/orthogonal.png"|absolute_url}})
+<br/>
 함수형 프로그래밍은 객체 지향 프로그래밍과 직교(orthogonal)하는 관계입니다. 세상을 모델링하는 방식에 있어 함수형은 부작용(side-effect)가 없는 코드를 작성하는 것에, 객체지향은 동작 추상화(behavioral abstraction) 초점을 맞추고 각기 발전해 왔습니다. 
 
 강력한 정적 타입 시스템을 갖는 것이 함수형 언어의 필수조건은 아니지만, 부작용을 최소화하는 목적에 잘 부합합니다. 강력한 타입 시스템은, 
