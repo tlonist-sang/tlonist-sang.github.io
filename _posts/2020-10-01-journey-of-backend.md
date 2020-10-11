@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Nexus, Graphql, Prisma와 함께한 백엔드 여정"
-date:   2020-09-29 17:53:57 +0900
+date:   2020-10-01 17:53:57 +0900
 categories: jekyll update
 comments: true
 ---
@@ -19,7 +19,7 @@ comments: true
 Prisma에 대해 간략히 소개하자면 **more than ORM** 을 지향하는 **database toolkit** 이라고 할 수 있습니다. 기존의 ORM이 class-interface에 기초한 object 상세서(specification)에서 출발했다면, Prisma는 하나의 소스(single source of truth)에서 출발하며 항상 plain JavaScript object를 반환한다는 점이 차이라고 할 수 있습니다. 또한 여러 migration 관련 기능(기존 database에서 prisma model을 뽑아오는 introspect, prisma model기반 database를 만들어주는 migrate)을 제공합니다.
 
 ### Nexus
-[![img]({{ "/assets/nexus.png"|absolute_url}})]({{ "/assets/nexus.png"|absolute_url}})
+[![img]({{ "/assets/nexus1.png"|absolute_url}})]({{ "/assets/nexus1.png"|absolute_url}})
 Nexus는 코드 우선(code-first)의 [기치를 내걸고](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3) resolver와 데이터 모델링 정의를 한곳에서 하며, 동적으로 graphql 스키마를 생성해주는 라이브러리입니다. [링크](https://nexusjs.org/docs/)를 참조하시면 도움이 되실겁니다.
 
 프론트가 Reason-React로 단번에 정해진 것과는 달리, 백엔드는 더 많은 개발진이 최근 활발히 작업하고 있는 ReScript로 가기로 결정했습니다. 막 개발팀이 생긴 초기에는, 새로운 함수형 친구 ReasonML과 ReScript를 익히기 위해 개발팀 전원이 [aoc](https://adventofcode.com/)등을 풀어가며 감을 익힘과 동시에 기술 스택에 대한 공부를 해 나갔습니다.
