@@ -6,16 +6,25 @@ categories: jekyll update
 comments: true
 ---
 
-그린랩스의 개발팀의 선택 - 함수형 프로그래밍
+## 그린랩스의 개발팀의 선택 - 함수형 프로그래밍
+
 그린랩스는 함수형 프로그래밍 언어인 ReasonML과 ReScript로 개발하고 있습니다. 둘은 서로 매우 가까운 친척관계로, OCaml이라는 함수형 언어에 문법적 설탕(Syntactic sugar)를 가미하여, BuckleScript를 통해 Node 생태계를 사용할 수 있도록 한 함수형 언어입니다. 
 
-한가지 차이점이라면 ReasonML은 널리 쓰이고 있는 프론트 라이브러리인 React와 잘 결합하여 Reason-React라는 생태계를 공고히 갖춘 반면, 백엔드단의 지원은 두 언어 모두 미비한 부분이 많았습니다. 지금부터 함수형 언어를 프로덕션에 사용하고자하는 그린랩스의 원대한 출항이 어떻게 이뤄졌는지, 간략하게 살펴보겠습니다.
+한가지 차이점이라면 ReasonML은 널리 쓰이고 있는 프론트 라이브러리인 React와 잘 결합하여 Reason-React라는 생태계를 공고히 갖춘 반면, ReScript는 두 언어 모두 미비한 부분이 많았습니다. 지금부터 함수형 언어를 프로덕션에 사용하고자하는 그린랩스의 원대한 출항이 어떻게 이뤄졌는지, 간략하게 살펴보겠습니다.
 
-그린랩스 웹개발팀의 초기 백엔드 기술 스택은 Graphql, Prisma 그리고 Nexus 였습니다. Graphql과 Prisma는 익히 알려진 솔루션인 반면, Nexus는 비교적 최근에 등장한 프로젝트입니다. 코드 우선(code-first)의 [기치를 내걸고](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3) resolver와 데이터 모델링 정의를 한곳에서 하며, 동적으로 graphql 스키마를 생성해주는 라이브러리입니다. [링크](https://nexusjs.org/docs/)
+그린랩스 웹개발팀의 초기 백엔드 기술 스택은 Graphql, Prisma 그리고 Nexus 였습니다. Graphql은 익히 알려진 솔루션인 반면, Prisma와 Nexus는 비교적 최근에 등장한 프로젝트입니다. 
+
+### Primsa
+[![img]({{ "/assets/prisma1.png"|absolute_url}})]({{ "/assets/prisma1.png"|absolute_url}})
+Prisma에 대해 간략히 소개하자면 **more than ORM** 을 지향하는 **database toolkit** 이라고 할 수 있습니다. 기존의 ORM이 class-interface에 기초한 object 상세서(specification)에서 출발했다면, Prisma는 하나의 소스(single source of truth)에서 출발하며 항상 plain JavaScript object를 반환한다는 점이 차이라고 할 수 있습니다. 또한 여러 migration 관련 기능(기존 database에서 prisma model을 뽑아오는 introspect, prisma model기반 database를 만들어주는 migrate)을 제공합니다.
+
+### Nexus
+[![img]({{ "/assets/nexus.png"|absolute_url}})]({{ "/assets/nexus.png"|absolute_url}})
+Nexus는 코드 우선(code-first)의 [기치를 내걸고](https://www.prisma.io/blog/the-problems-of-schema-first-graphql-development-x1mn4cb0tyl3) resolver와 데이터 모델링 정의를 한곳에서 하며, 동적으로 graphql 스키마를 생성해주는 라이브러리입니다. [링크](https://nexusjs.org/docs/)를 참조하시면 도움이 되실겁니다.
 
 프론트가 Reason-React로 단번에 정해진 것과는 달리, 백엔드는 더 많은 개발진이 최근 활발히 작업하고 있는 ReScript로 가기로 결정했습니다. 막 개발팀이 생긴 초기에는, 새로운 함수형 친구 ReasonML과 ReScript를 익히기 위해 개발팀 전원이 [aoc](https://adventofcode.com/)등을 풀어가며 감을 익힘과 동시에 기술 스택에 대한 공부를 해 나갔습니다.
 
-드디어 첫 과제가 나온 시점. 백엔드 개발에서는 넘어야 할 산이 있었으니 바로 타이핑(typing) 이었습니다. 내부에서 **퍼즐 맞추기 같다** 라는 이야기가 나올정도로, ReScript의 타입 시스템은 엄격하고 정교한 작업을 필요로 했습니다. 간략히 함수형 언어와 타입 시스템이 어떤 관계에 있는지 알아보겠습니다.
+드디어 첫 과제가 나온 시점. 백엔드 개발에서는 넘어야 할 산이 있었으니 바로 타이핑(typing) 이었습니다. 내부에서 '퍼즐 맞추기 같다'라는 이야기가 나올정도로, ReScript의 타입 시스템은 엄격하고 정교한 작업을 필요로 했습니다. 간략히 함수형 언어와 타입 시스템이 어떤 관계에 있는지 알아보겠습니다.
 
 ## 함수형 프로그래밍과 타입 시스템
 
@@ -150,7 +159,7 @@ let createParam: NexusResolver.mutationResolver<NexusResolver.speciesQuantity, N
 프론트단에서 들어오는 값들에 대한 Null 값 처리 및 타입 확인은 GraphQL에서 이뤄지고 있음을 확인했습니다. 여기서 Prisma Client가 쓰게 될 인자들에 대한 타이핑을 다시 하는 것이 의미있을까요? GraphQL에서 정의한 타입을 다시 정의하는 것밖에 되지 않는다고 판단해 Prisma의 인자들에 대해서는 Record가 아닌 Object를 사용하여 타입 체크를 하지 않기로 했습니다. ReScript의 Record와 Object에 대해선 [공식문서](https://rescript-lang.org/docs/manual/latest/object)를 참고하시면 좋을 것 같습니다.
 
 ### nexus에 대해서
-그 다음 고민은 **과연 Nexus가 필요한가** 였습니다. Nexus에 대한 바인딩은 **넥서스를 얼마나 잘 사용하고 있는가**를 체크하는 행위로, 그걸 사용하는 입장에서 많은 시간과 노력을 들여가며 엄격히 다뤄야 할 필요를 느끼지 못했습니다. Nexus의 코드 우선(code-first) 개발에 대한 원론적인 회의감이 생겼습니다. 그래서 과김히 걷어내기로 결정했습니다. 
+그 다음 고민은 **과연 Nexus가 필요한가** 였습니다. Nexus에 대한 바인딩은 **넥서스를 얼마나 잘 사용하고 있는가**를 체크하는 행위로, 그걸 사용하는 입장에서 많은 시간과 노력을 들여가며 엄격히 다뤄야 할 필요를 느끼지 못했습니다. 나중에 더 자세히 다루겠지만, Nexus의 코드 우선(code-first) 개발에 대해서도 원론적인 회의감이 생겼습니다. 그래서 과김히 걷어내기로 결정했습니다. 
 
 ## 세번째 - 해결책 :
 
@@ -161,6 +170,7 @@ let createParam: NexusResolver.mutationResolver<NexusResolver.speciesQuantity, N
 이렇게 결정한 후의 이점은 다음과 같습니다.
 - 1. 의존하고 있는 라이브러리가 줄고, 바인딩해야 할 대상이 적어져 개발시간이 현저히 단축되었습니다.
 - 2. 여전히 ReScript의 타입 시스템을 활용해 프론트엔드 단에서 넘어오는 데이터 조작 시 타입 안정성을 보장받을 수 있게 되었습니다.
+- 결론적으로, ReScript의 엄격한 타입 시스템을 잘 활용할 수 있는 부분에만 적절히 적용하고, 나머지 부분은 개발 속도 및 합리적인 유지보수를 위해 사용하지 않기로 했습니다.
 
 [![img]({{ "/assets/rescript.png"|absolute_url}})]({{ "/assets/rescript.png"|absolute_url}})
 
