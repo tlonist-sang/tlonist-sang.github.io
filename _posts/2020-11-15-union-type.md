@@ -6,8 +6,6 @@ categories: jekyll update
 comments: true
 ---
 
-##
-
 ReScript의 variant가 하나의 필드를 가진 레코드로 된 인자를 갖고있다고 생각해 봅시다.
 
 ```javascript
