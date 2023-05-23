@@ -1,0 +1,49 @@
+---
+date: 2019-10-06 00:45:22 +0900
+layout: post
+title:  "JVM"
+subtitle: what is JVM?
+description: a very short definition
+image: /assets/img/advanced.jpg
+optimized_image: /assets/img/advanced.jpg
+category: java
+tags: Java
+author: tlonist
+---
+
+##[[JVM (Java Virtual Machine)]]
+
+- All applications made with Java is run on JVM
+
+Normal Application : [ Java Application ] + [OS(windows, linux)] + [Computer(Hardware)]
+Java Application   : [ Java Application ] + **[       JVM        ]** + [OS(windows, linux)] + [Computer(Hardware)]
+
+Because Java necessitates JVM,
+- write once, run anywhere is possible
+- it may be slower than non JVM apps. => JIT compiler 
+
+> #### JDK and JRE(Java Runtime Environment)
+
+> "JDK" contains 
+- javac.exe : compiler that compiles Java source code to byte code
+- java.exe : interpreter that intereprets and executes byte code produced by the compiler
+- javap.exe : reverse assembler that translates class files to java source files
+
+> "JRE" is a subset of JDK 
+- it does NOT have Java compiler or libraries like Javadoc and jdb.
+- it can be used just to 'run' an already compiled Java application.
+
+
+> #### How to run a really simple Java Code?
+
+1. Create HelloWorld.java
+```java
+class HelloWorld{
+    public static void main(String[] args){
+        System.out.println("Hello world!");
+    }
+}
+```
+
+2. Compile Java file to class file using Java compiler
+3. Run the class file using Java command.

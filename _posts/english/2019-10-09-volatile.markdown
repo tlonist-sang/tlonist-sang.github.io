@@ -1,0 +1,35 @@
+---
+layout: post
+title:  "volatile"
+subtitle:
+description:
+date:   2019-10-09  00:45:22 +0900
+comments: true
+categories: Java
+image: /assets/img/magma.png
+optimized_image: /assets/img/magma.png
+category: java
+tags: Java
+author: tlonist
+---
+
+Each multicore processor has its own cache, like the diagram below describes.
+
+![image](https://qph.fs.quoracdn.net/main-qimg-434f6d0045b7959bd50a0a031716cc25)
+
+It wasn't a problem when it was just a single core processor (with only one cache), but the problem starts when a value is updated differently for each of the caches that cores have. 
+
+To prevent this from happening, there is a keyword **volatile**.
+Instead of reading a value from a cache, a variable with **volatile** keyword always reads from the main system memory. 
+
+Quite the same effect is achieved by using '**synchronized**' keyword; because caches and memories are synchronized when a thread enters and exits the synchronized block. 
+
+- Atomization with **volatile**
+Because JVM processes data with unit of 4 byte(32 bits), int or any type smaller than int can be processed at once; that being said, there is no possibility of other threads intervening the actual data in the middle of data processing. However, for 8 byte variable types like long and double, it is quite not the case. 
+
+```java
+    volatile long
+    volatile double
+```
+
+For such occasion, using **volatile** keyword helps, because it guarantees a thread safe operation for the variable at hand. 
